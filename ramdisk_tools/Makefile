@@ -1,7 +1,7 @@
-SDKVER?=7.0
+SDKVER?=8.4
 ARCH?=armv7
 MINIOS=4.0
-SDK=/Applications/Xcode.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDKVER).sdk/
+SDK=/Applications/XcodeO.app/Contents/Developer/Platforms/iPhoneOS.platform/Developer/SDKs/iPhoneOS$(SDKVER).sdk/
 HGVERSION:= $(shell hg parents --template '{node|short}' || echo "unknown")
 CC=clang -arch $(ARCH)
 CFLAGS=-Wall -Wno-pointer-sign -isysroot $(SDK) -DHGVERSION="\"${HGVERSION}\"" -O3 -I.
