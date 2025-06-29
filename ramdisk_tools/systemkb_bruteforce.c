@@ -26,6 +26,45 @@
 const char* def_prog = "/mnt1/private/etc/bruteforce.txt";
 int load = 1;
 
+const char *digits_art[10][5] = {
+    {"######", "##  ##", "##  ##", "##  ##", "######"}, // 0
+    {"####  ", "  ##  ", "  ##  ", "  ##  ", "######"}, // 1
+    {"######", "    ##", "######", "##    ", "######"}, // 2
+    {"######", "    ##", "######", "    ##", "######"}, // 3
+    {"##  ##", "##  ##", "######", "    ##", "    ##"}, // 4
+    {"######", "##    ", "######", "    ##", "######"}, // 5
+    {"######", "##    ", "######", "##  ##", "######"}, // 6
+    {"######", "    ##", "    ##", "    ##", "    ##"}, // 7
+    {"######", "##  ##", "######", "##  ##", "######"}, // 8
+    {"######", "##  ##", "######", "    ##", "######"}  // 9
+};
+
+void asciifier(const char *digits) {
+    printf("\n");
+    int len = strlen(digits);
+    for (int line = 0; line < 5; line++) {
+        for (int i = 0; i < len; i++) {
+            if (isdigit(digits[i])) {
+                int digit = digits[i] - '0';
+                const char *art_line = digits_art[digit][line];
+                for (int j = 0; j < strlen(art_line); j++) {
+                    if (art_line[j] == '#') {
+                        printf("\033[42m \033[0m");
+                    } else {
+                        printf("\033[40m \033[0m");
+                    }
+                }
+                printf("  ");
+            } else {
+                printf("\033[47m        \033[0m");
+            }
+        }
+        printf("\n");
+    }
+    printf("\n");
+}
+
+
 void saveKeybagInfos(CFDataRef kbkeys, KeyBag* kb, uint8_t* key835, char* passcode, uint8_t* passcodeKey, CFMutableDictionaryRef classKeys)
 {
     CFMutableDictionaryRef out = device_info(-1, NULL);
@@ -219,12 +258,17 @@ int main(int argc, char* argv[])
     int start = -1;
     int c;
     
-    while ((c = getopt (argc, argv, "uinr:")) != -1)
+    while ((c = getopt (argc, argv, "utinr:")) != -1)
     {
         switch (c)
         {
             case 'u':
                 bruteforceMethod = 1;
+                break;
+            case 't':
+                asciifier("12345");
+                asciifier("67890");
+                return 0;
                 break;
             case 'i':
                 showImages = 1;
@@ -351,20 +395,11 @@ int main(int argc, char* argv[])
         }
         else
         {
-            printf("Found passcode : %s\n", passcode);
-            AppleKeyStore_printKeyBag(kb);
-
+            printf("Found passcode :\n");
+            
             CFMutableDictionaryRef classKeys = AppleKeyStore_getClassKeys(kb);
 
-            AppleKeyStore_getPasscodeKey(kb, passcode, strlen(passcode), passcodeKey);
-
-            printf("Passcode key : ");
-            printBytesToHex(passcodeKey, 32);
-            printf("\n");
-
-            printf("Key 0x835 : ");
-            printBytesToHex(key835, 16);
-            printf("\n");
+            asciifier(passcode);
 
             //save all we have for now
             saveKeybagInfos(kbkeys, kb, key835, passcode, passcodeKey, classKeys);
